@@ -3,6 +3,9 @@ services:
   app:
     build:
       context: .
+      dockerfile: ./Dockerfile
+      args:
+        - ENV=dev
     environment:
       - MIX_ENV=dev
       - DATABASE_URL=ecto://postgres:postgres@postgres/sense_dev
@@ -12,7 +15,7 @@ services:
       - 4000:4000
     user: $UID
     volumes:
-      - ./app:/app
+      - .:/app
     stdin_open: true
     tty: true
 
