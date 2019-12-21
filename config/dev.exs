@@ -1,13 +1,18 @@
 use Mix.Config
 
 # Configure your database
+database_url =
+  System.get_env("DATABASE_URL") ||
+    raise """
+    environment variable DATABASE_URL is missing.
+    For example: ecto://USER:PASS@HOST/DATABASE
+    """
+
 config :sensenew, Sense.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "sensenew_dev",
-  hostname: "localhost",
+  # ssl: true,
+  url: database_url,
+  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
   show_sensitive_data_on_connection_error: true,
-  pool_size: 10
 
 # For development, we disable any cache and enable
 # debugging and code reloading.

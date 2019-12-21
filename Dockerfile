@@ -2,6 +2,7 @@ FROM bitwalker/alpine-elixir-phoenix:1.8.1
 MAINTAINER David Martin <davidmartingarcia0@gmail.com>
 ARG DATABASE_URL=ecto://USER:PASS@HOST/DATABASE
 ARG SECRET_KEY_BASE=secretkeybase
+ARG ENV=test
 
 # Set exposed ports
 EXPOSE 4000
@@ -9,7 +10,8 @@ WORKDIR /app
 
 ENV DATABASE_URL=$DATABASE_URL
 ENV SECRET_KEY_BASE=$SECRET_KEY_BASE
-ENV PORT=4000 MIX_ENV=prod
+ENV PORT=4000
+ENV MIX_ENV=$ENV
 
 # Cache elixir deps
 RUN mix local.hex --force && \
