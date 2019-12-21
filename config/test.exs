@@ -1,11 +1,15 @@
 use Mix.Config
 
 # Configure your database
+database_url =
+  System.get_env("DATABASE_URL") ||
+    raise """
+    environment variable DATABASE_URL is missing.
+    For example: ecto://USER:PASS@HOST/DATABASE
+    """
+
 config :sensenew, Sense.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "sensenew_test",
-  hostname: "localhost",
+  url: database_url,
   pool: Ecto.Adapters.SQL.Sandbox
 
 # We don't run a server during test. If one is required,
