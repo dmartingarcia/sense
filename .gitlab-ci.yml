@@ -23,6 +23,14 @@ before_script:
   services:
     - docker:dind
 
+.services:
+  extends: .build
+  variables:
+    POSTGRES_DB: sense-ng-test
+    DATABASE_URL: postgres://postgres:postgres@postgres:5432/$POSTGRES_DB
+  services:
+    - postgres:latest
+
 build:
   extends: .build
   stage: build
@@ -31,13 +39,13 @@ build:
   before_script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
-    - echo $SECRET_KEY_BASE
     - docker pull $CI_REGISTRY_IMAGE:latest || true
     - docker build --cache-from $CI_REGISTRY_IMAGE:latest --build-arg ENV=test -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
 
 # Stage test
 tests:
+  extends: .services
   stage: test
   image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
   script: MIX_ENV=test mix coveralls.html
