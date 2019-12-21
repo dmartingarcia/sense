@@ -1,0 +1,121 @@
+image: docker:latest
+
+stages:
+  - build
+  - test
+  - audit
+  - push cache
+  - before deploy
+  - deploy
+  - after deploy
+
+variables:
+  GIT_STRATEGY: none
+  DOCKER_TLS_CERTDIR: ""
+
+before_script:
+  - cd /app
+
+.build:
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_DRIVER: overlay2
+  services:
+    - docker:dind
+
+build:
+  extends: .build
+  stage: build
+  variables:
+    GIT_STRATEGY: fetch
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+    - echo $SECRET_KEY_BASE
+    - docker pull $CI_REGISTRY_IMAGE:latest || true
+    - docker build --cache-from $CI_REGISTRY_IMAGE:latest --build-arg ENV=test -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+
+# Stage test
+tests:
+  stage: test
+  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+  script: MIX_ENV=test mix coveralls.html
+  coverage: '/[TOTAL]  \(\d+.\d+\%\)/'
+  artifacts:
+    when: on_failure
+    expire_in: 1 day
+    paths:
+    - cover/
+
+linter:
+  stage: test
+  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+  script: MIX_ENV=test mix credo
+
+# Stage audit
+npm-audit:
+  allow_failure: true
+  stage: audit
+  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+  script: cd assets && npm audit
+
+mix-audit:
+  allow_failure: true
+  stage: audit
+  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+  script: mix hex.audit
+
+security-static-analysis:
+  allow_failure: true
+  stage: audit
+  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+  script: MIX_ENV=test mix sobelow --config
+
+# Stage push cache
+tag-and-push:
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  extends: .build
+  stage: push cache
+  script:
+    - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE:latest
+  except:
+    - master
+    - /^release\/.*$/
+    - /^hotfix\/.*$/
+
+# Stage before deploy
+build-prod-image:
+  extends: .build
+  stage: build
+  variables:
+    GIT_STRATEGY: fetch
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  stage: before deploy
+  script:
+    - docker build --build-arg ENV=prod -t $CI_REGISTRY_IMAGE:prod-$CI_COMMIT_SHA .
+    - docker push $CI_REGISTRY_IMAGE:prod-$CI_COMMIT_SHA
+  only:
+    - master
+    - /^release\/.*$/
+    - /^hotfix\/.*$/
+
+# Stage deploy
+ship-it:
+  image: maykonlf/pipeline-kubectl:1.15
+  before_script:
+    - mkdir ~/.kube && echo $KUBECONFIGFILE | base64 -d > ~/.kube/config
+  variables:
+    GIT_STRATEGY: fetch
+  extends: .build
+  stage: deploy
+  script:
+    - envsubst < infra/k8s/app-deployment.yaml | kubectl apply -f -
+  only:
+    - master
+    - /^release.*$/
+    - /^hotfix.*$/
