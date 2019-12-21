@@ -42,5 +42,7 @@ defmodule SenseWeb.Endpoint do
     key: "_sensenew_key",
     signing_salt: "dA/XcEoG"
 
+  plug Pow.Plug.Session
+
   plug SenseWeb.Router
 end
