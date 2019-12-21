@@ -1,0 +1,25 @@
+version: "3.6"
+services:
+  app:
+    build:
+      context: .
+    environment:
+      - MIX_ENV=dev
+      - DATABASE_URL=ecto://postgres:postgres@postgres/sense_dev
+    depends_on:
+      - postgres
+    ports:
+      - 4000:4000
+    user: $UID
+    volumes:
+      - ./app:/app
+    stdin_open: true
+    tty: true
+
+  postgres:
+    image: postgres:11.1-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=sense_dev
+    ports:
+      - 5432:5432
