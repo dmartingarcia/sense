@@ -29,7 +29,9 @@ config :phoenix, :json_library, Jason
 config :sensenew, :pow,
   user: Sense.Users.User,
   repo: Sense.Repo,
-  web_module: SenseWeb
+  web_module: SenseWeb,
+  routes_backend: SenseWeb.Pow.Routes,
+  error_handler: Pow.Phoenix.PlugErrorHandler
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
