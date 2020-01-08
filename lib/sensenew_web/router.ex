@@ -39,11 +39,7 @@ defmodule SenseWeb.Router do
     pipe_through :browser
     pipe_through :authenticated
 
-    resources "/users", UserController
+    get "/dashboard", SiteController, :index, as: :dashboard
+    resources "/sites", SiteController
   end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", SenseWeb do
-  #   pipe_through :api
-  # end
 end
