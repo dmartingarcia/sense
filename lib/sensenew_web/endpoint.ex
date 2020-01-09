@@ -1,6 +1,10 @@
 defmodule SenseWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :sensenew
 
+  if Application.get_env(:sensenew, :sql_sandbox) do
+    plug Phoenix.Ecto.SQL.Sandbox
+  end
+
   socket "/socket", SenseWeb.UserSocket,
     websocket: true,
     longpoll: false

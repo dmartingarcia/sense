@@ -4,6 +4,7 @@ defmodule Sense.Repo.Migrations.CreateSites do
   def change do
     create table(:sites, primary_key: false) do
       add :id, :binary_id, primary_key: true
+      add :name, :string
 
       timestamps()
     end
