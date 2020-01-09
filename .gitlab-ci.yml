@@ -54,7 +54,8 @@ tests:
     when: on_failure
     expire_in: 1 day
     paths:
-    - cover/
+    - /app/cover
+    - /app/screenshots
 
 linter:
   stage: test
