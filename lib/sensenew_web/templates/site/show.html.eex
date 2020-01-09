@@ -2,6 +2,11 @@
 
 <ul>
 
+  <li>
+    <strong>Name:</strong>
+    <%= @site.name %>
+  </li>
+
 </ul>
 
 <span><%= link "Edit", to: Routes.site_path(@conn, :edit, @site) %></span>

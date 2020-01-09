@@ -6,9 +6,9 @@ defmodule Sense.DashboardTest do
   describe "sites" do
     alias Sense.Dashboard.Site
 
-    @valid_attrs %{}
-    @update_attrs %{}
-    @invalid_attrs %{}
+    @valid_attrs %{name: "some name"}
+    @update_attrs %{name: "some updated name"}
+    @invalid_attrs %{name: nil}
 
     def site_fixture(attrs \\ %{}) do
       {:ok, site} =

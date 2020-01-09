@@ -5,6 +5,7 @@ defmodule Sense.Dashboard.Site do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "sites" do
+    field :name, :string
 
     timestamps()
   end
@@ -12,7 +13,7 @@ defmodule Sense.Dashboard.Site do
   @doc false
   def changeset(site, attrs) do
     site
-    |> cast(attrs, [])
-    |> validate_required([])
+    |> cast(attrs, [:name])
+    |> validate_required([:name])
   end
 end
