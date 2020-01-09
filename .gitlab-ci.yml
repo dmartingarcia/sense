@@ -23,14 +23,6 @@ before_script:
   services:
     - docker:dind
 
-.services:
-  extends: .build
-  variables:
-    POSTGRES_DB: sense-ng-test
-    DATABASE_URL: postgres://postgres:postgres@postgres:5432/$POSTGRES_DB
-  services:
-    - postgres:latest
-
 build:
   extends: .build
   stage: build
@@ -45,17 +37,21 @@ build:
 
 # Stage test
 tests:
-  extends: .services
   stage: test
+  variables:
+    POSTGRES_DB: sense-ng-test
+    DATABASE_URL: postgres://postgres:postgres@postgres:5432/$POSTGRES_DB
+    WALLABY_SCREENSHOT_DIR: /app/artifacts
+  services:
+    - postgres:latest
   image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-  script: MIX_ENV=test mix coveralls.html
+  script: MIX_ENV=test mix coveralls.html -o /app/artifacts || ls /app/artifacts
   coverage: '/[TOTAL]  \(\d+.\d+\%\)/'
   artifacts:
-    when: on_failure
+    when: always
     expire_in: 1 day
     paths:
-    - /app/cover
-    - /app/screenshots
+    - /app/artifacts
 
 linter:
   stage: test

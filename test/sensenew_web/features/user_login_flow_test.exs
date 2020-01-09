@@ -21,9 +21,9 @@ defmodule SenseWeb.Features.UserLoginFlowTest do
     assert Repo.aggregate(User, :count, :id)  == 1
 
     session
-    |> assert_has(css("#sign-out"))
+    |> assert_has(link("Sign out"))
     |> click(link("Sign out"))
-    |> assert_has(css("#sign-in"))
+    |> assert_has(link("Sign in"))
     |> click(link("Sign in"))
     |> fill_in(text_field("Email"), with: @email)
     |> fill_in(text_field("Password"), with: @password)

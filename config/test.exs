@@ -26,4 +26,5 @@ config :logger, level: :warn
 config :wallaby,
   driver: Wallaby.Experimental.Chrome,
   chrome: [headless: true],
-  screenshot_on_failure: true
+  screenshot_on_failure: true,
+  screenshot_dir: System.get_env("WALLABY_SCREENSHOT_DIR") || "screenshots"
