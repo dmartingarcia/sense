@@ -19,6 +19,26 @@ services:
     stdin_open: true
     tty: true
 
+  test:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        - ENV=test
+    command: mix test
+    environment:
+      - MIX_ENV=test
+      - DATABASE_URL=ecto://postgres:postgres@postgres/sense_test
+    depends_on:
+      - postgres
+    ports:
+      - 4000:4000
+    user: $UID
+    volumes:
+      - .:/app
+    stdin_open: true
+    tty: true
+
   postgres:
     image: postgres:11.1-alpine
     environment:
