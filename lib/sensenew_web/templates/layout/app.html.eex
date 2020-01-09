@@ -19,10 +19,10 @@
         <a href="/" class="brand-logo"> Sense-ng</a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
           <%= if Pow.Plug.current_user(@conn) do %>
-          <li><%= link "Sign out", to: Routes.pow_session_path(@conn, :delete, method: :delete), method: :delete %></li>
+          <li><%= link "Sign out", id: "sign-out", to: Routes.pow_session_path(@conn, :delete, method: :delete), method: :delete %></li>
           <% else %>
-          <li><%= link "Sign in", to: Routes.pow_session_path(@conn, :new) %></li>
-          <li><%= link "Register", to: Routes.pow_registration_path(@conn, :new) %></li>
+          <li><%= link "Sign in", id: "sign-in", to: Routes.pow_session_path(@conn, :new) %></li>
+          <li><%= link "Register", id: "register", to: Routes.pow_registration_path(@conn, :new) %></li>
           <% end %>
         </ul>
       </div>
