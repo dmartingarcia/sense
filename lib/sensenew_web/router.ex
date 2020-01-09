@@ -10,6 +10,14 @@ defmodule SenseWeb.Router do
     plug :put_secure_browser_headers
   end
 
+  pipeline :authenticated do
+    plug Pow.Plug.RequireAuthenticated, error_handler: Pow.Phoenix.PlugErrorHandler
+  end
+
+  pipeline :not_authenticated do
+    plug Pow.Plug.RequireNotAuthenticated, error_handler: Pow.Phoenix.PlugErrorHandler
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
   end
@@ -22,12 +30,16 @@ defmodule SenseWeb.Router do
 
   scope "/", SenseWeb do
     pipe_through :browser
+    pipe_through :not_authenticated
 
     get "/", PageController, :index
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", SenseWeb do
-  #   pipe_through :api
-  # end
+  scope "/", SenseWeb do
+    pipe_through :browser
+    pipe_through :authenticated
+
+    get "/dashboard", SiteController, :index, as: :dashboard
+    resources "/sites", SiteController
+  end
 end
