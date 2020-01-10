@@ -13,6 +13,8 @@ ENV SECRET_KEY_BASE=$SECRET_KEY_BASE
 ENV PORT=4000
 ENV MIX_ENV=$ENV
 
+RUN apk add chromium-chromedriver chromium
+
 # Cache elixir deps
 RUN mix local.hex --force && \
     mix local.rebar --force

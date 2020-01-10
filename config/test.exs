@@ -16,7 +16,15 @@ config :sensenew, Sense.Repo,
 # you can enable the server option below.
 config :sensenew, SenseWeb.Endpoint,
   http: [port: 4002],
-  server: false
+  server: true
+
+config :sensenew, :sql_sandbox, true
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+config :wallaby,
+  driver: Wallaby.Experimental.Chrome,
+  chrome: [headless: true],
+  screenshot_on_failure: true,
+  screenshot_dir: System.get_env("WALLABY_SCREENSHOT_DIR") || "screenshots"

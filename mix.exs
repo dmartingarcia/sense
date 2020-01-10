@@ -48,6 +48,7 @@ defmodule Sense.MixProject do
       {:excoveralls, "~> 0.10", only: :test},
       {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false},
       {:sobelow, "~> 0.8", only: [:dev, :test]},
+      {:wallaby, "~> 0.23.0", [runtime: false, only: :test]},
       {:pow, "~> 1.0.15"}
     ]
   end
