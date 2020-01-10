@@ -45,7 +45,7 @@ tests:
   services:
     - postgres:latest
   image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-  script: MIX_ENV=test mix coveralls.html -o /app/artifacts || ls /app/artifacts
+  script: MIX_ENV=test mix coveralls.html -o /app/artifacts
   coverage: '/[TOTAL]  \(\d+.\d+\%\)/'
   artifacts:
     when: always

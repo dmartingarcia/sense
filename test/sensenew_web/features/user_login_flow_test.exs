@@ -23,6 +23,7 @@ defmodule SenseWeb.Features.UserLoginFlowTest do
     session
     |> assert_has(link("Sign out"))
     |> click(link("Sign out"))
+    |> visit("/")
     |> assert_has(link("Sign in"))
     |> click(link("Sign in"))
     |> fill_in(text_field("Email"), with: @email)
