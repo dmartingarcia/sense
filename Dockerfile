@@ -1,4 +1,4 @@
-FROM bitwalker/alpine-elixir-phoenix:1.8.1
+FROM elixir:alpine
 MAINTAINER David Martin <davidmartingarcia0@gmail.com>
 ARG DATABASE_URL=ecto://USER:PASS@HOST/DATABASE
 ARG SECRET_KEY_BASE=secretkeybase
@@ -13,14 +13,15 @@ ENV SECRET_KEY_BASE=$SECRET_KEY_BASE
 ENV PORT=4000
 ENV MIX_ENV=$ENV
 
-RUN apk add chromium-chromedriver chromium
+# Add chromium-chromedriver and chromium for testing purposes (they're not available for ARMHF)
+RUN apk add --update nodejs npm inotify-tools
 
 # Cache elixir deps
 RUN mix local.hex --force && \
     mix local.rebar --force
 ADD mix.exs mix.lock ./
-RUN mix do deps.get, deps.compile
 
+RUN mix do deps.get, deps.compile
 
 # Same with npm deps
 ADD assets/package.json ./assets/package.json
